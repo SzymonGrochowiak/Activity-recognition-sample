@@ -6,12 +6,15 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.TextView;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.ActivityRecognition;
 
 public class MainActivity extends Activity implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
+
+    private TextView recognitionTextView;
 
     private static final long DETECTION_INTERVAL = 10000;
 
@@ -21,6 +24,8 @@ public class MainActivity extends Activity implements GoogleApiClient.Connection
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        recognitionTextView = (TextView) findViewById(R.id.recognitionTextView);
 
         mGoogleApiClient = new GoogleApiClient.Builder(this).addApi(ActivityRecognition.API)
                 .addConnectionCallbacks(this).addOnConnectionFailedListener(this).build();
@@ -59,7 +64,9 @@ public class MainActivity extends Activity implements GoogleApiClient.Connection
 
     @Override
     public void onConnectionSuspended(int i) {
-
+        Intent intent = new Intent(this, ActivityRecognitionService.class);
+        PendingIntent pendingIntent = PendingIntent.getService(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+        ActivityRecognition.ActivityRecognitionApi.removeActivityUpdates(mGoogleApiClient, pendingIntent);
     }
 
     @Override

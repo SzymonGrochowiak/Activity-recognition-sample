@@ -2,6 +2,7 @@ package com.activityrecognitiondemo;
 
 import android.app.IntentService;
 import android.content.Intent;
+import android.util.Log;
 
 /**
  * @author Szymon Grochowiak
@@ -18,6 +19,6 @@ public class ActivityRecognitionService extends IntentService {
 
     @Override
     protected void onHandleIntent(Intent intent) {
-
+        Log.i("ACTIVITY RECOGNITION", "response");
     }
 }

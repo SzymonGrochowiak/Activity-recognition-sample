@@ -8,6 +8,11 @@ import android.util.Log;
  * @author Szymon Grochowiak
  */
 public class ActivityRecognitionService extends IntentService {
+
+    public ActivityRecognitionService() {
+        super("ActivityRecognitionService");
+    }
+
     /**
      * Creates an IntentService.  Invoked by your subclass's constructor.
      *

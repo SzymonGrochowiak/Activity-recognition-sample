@@ -1,4 +1,4 @@
-package com.activityrecognitiondemo;
+package com.activityrecognitiondemo.activities;
 
 import android.app.Activity;
 import android.app.PendingIntent;
@@ -8,15 +8,22 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.TextView;
 
+import com.activityrecognitiondemo.MainThreadBus;
+import com.activityrecognitiondemo.R;
+import com.activityrecognitiondemo.events.ActivityRecognitionEvent;
+import com.activityrecognitiondemo.service.ActivityRecognitionService;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.ActivityRecognition;
+import com.squareup.otto.Subscribe;
 
 public class MainActivity extends Activity implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
 
+    private MainThreadBus mBus = MainThreadBus.getInstance();
+
     private TextView recognitionTextView;
 
-    private static final long DETECTION_INTERVAL = 10000;
+    private static final long DETECTION_INTERVAL = 2000;
 
     private GoogleApiClient mGoogleApiClient;
 
@@ -24,6 +31,8 @@ public class MainActivity extends Activity implements GoogleApiClient.Connection
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        mBus.register(this);
 
         recognitionTextView = (TextView) findViewById(R.id.recognitionTextView);
 
@@ -36,6 +45,7 @@ public class MainActivity extends Activity implements GoogleApiClient.Connection
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        mBus.unregister(this);
         mGoogleApiClient.disconnect();
     }
 
@@ -72,5 +82,10 @@ public class MainActivity extends Activity implements GoogleApiClient.Connection
     @Override
     public void onConnectionFailed(ConnectionResult connectionResult) {
 
+    }
+
+    @Subscribe
+    public void onActivityRecognitionEvent(ActivityRecognitionEvent event) {
+        recognitionTextView.setText(event.getResult().getMostProbableActivity().toString());
     }
 }
